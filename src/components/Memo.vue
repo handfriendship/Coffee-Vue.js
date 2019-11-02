@@ -1,9 +1,13 @@
 <template>
   <li class="memo-item">
-    <strong>{{ propsdata.title }} // {{propsindex}}</strong>
-    <p >
-      <template></template>
-      <input v-model="propsContent"/>
+    <strong>{{ propsdata.title }}</strong>
+    <p v-on:click="updateclick" v-on="keyEvent">
+      <template >{{propsdata.content}}</template>
+      <input type="text"
+              ref="content"
+              :value="propsdata.content"
+              v-if="isclicked"
+              />
     </p>
     <button>
       <i class="fas fa-times" v-on:click="delMemo"></i>
@@ -17,19 +21,82 @@
 
 
 export default {
-  name: 'Memo',
-  props: ['propsdata', 'propsindex'],
-  data(){
-    return {
-      msg: 'Hello World', propsContent: this.propsdata.content,
+
+  props: {
+    propsdata: {
+      type: Object,
     }
   },
-  watch: {
+  created(){
+    console.log("this.propsdata.content : ", this.propsdata.content);
+    console.log("created called!");
+  },
+  beforeMount(){
+    console.log("this.propsdata.content : ", this.propsdata.content);
+    console.log("beforeMount called!");
+  },
+  mounted(){
+    console.log("this.propsdata.content : ", this.propsdata.content);
+    console.log("mounted called!");
+  },
+  beforeUpdate(){
+    console.log("this.propsdata.content : ", this.propsdata.content);
+    console.log("beforeUpdate called!");
+    // this.setisclicked();
+  },
+  updated(){
+    console.log("this.propsdata.content : ", this.propsdata.content);
+    console.log("updated called!");
+    console.log("this.isclicked : ", this.isclicked);
+    // var vm = this;
+    // if(this.isclicked === true){
+    //   console.log("if called!");
+    //   this.setisclicked().then(function(){
+    //     console.log("this.isclicked : ", vm.isclicked);
+    //   }, function(error){
+    //     console.log(error);
+    //   })
+    // } else {
+    //   console.log("else called!");
+    // }
+  },
+  data(){
+    return {
+      msg: 'Hello World', changedData: '', isclicked: false, keyEvent: {keyup: this.enterkey},
 
+    }
   },
   methods: {
     delMemo: function(){
-      this.$emit('delMemo', this.propsindex);
+      this.$emit('delMemo', this.propsdata.id);
+    },
+    updateclick: function(){
+      console.log("updateclick called");
+      this.isclicked = true;
+    },
+    setisclicked: function(){
+      console.log("setisclicked called!");
+      var vm = this;
+      return new Promise(function(resolve, reject) {
+        vm.isclicked = false;
+        resolve(vm.isclicked);
+        reject("Error");
+      });
+    },
+    enterkey: function(){
+
+      if(window.event.keyCode == 13){
+        console.log("enterkey Enabled!");
+        console.log("$refs : ", this.$refs.content.value);
+        this.$emit('update', this.$refs.content.value, this.propsdata.id);
+      }
+    }
+  },
+  watch: {
+    propsdata: function(){
+      console.log("watch detects something related to propsdata");
+      console.log("propsdata : ", this.propsdata);
+      this.isclicked = false;
     }
   }
 

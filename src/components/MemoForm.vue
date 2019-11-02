@@ -1,14 +1,14 @@
 <template>
   <div class="memo-form">
     MemoForm.vue
-    <form>
+    <form @submit.prevent="register">
       <fieldset>
         <input type="text" class="memo-form__title-form"
           placeholder="Enter the title " v-model="title" />
-        <input type="text" class="memo-form__content_form"
+        <textarea class="memo-form__content_form"
           placeholder="Enter the content " v-model="content"/>
         <button type="reset">Reset</button>
-        <button type="submit" v-on:click="register">Register</button>
+        <button type="submit">Register</button>
       </fieldset>
     </form>
   </div>
@@ -19,7 +19,7 @@ export default {
   data (){
     return {
       title: '', content: '',
-      memoObj: { },
+
     }
   },
   created() {
@@ -29,19 +29,25 @@ export default {
   },
   methods: {
     register: function(e){
-      e.preventDefault();
-      // console.log("memoObj : ", this.memoObj);
-      this.$EventBus.$emit('register', this.memoObj);
-      this.memoObj = {};
+      const {title, content} = this;
+      const id = new Date().getTime();
+
+      if(title.length === 0 || content.length === 0){
+        return false;
+      }
+
+      this.$emit('register', {id, title, content});
+      this.title = '';
+      this.content = '';
     }
   },
   watch: {
-    title(data) {
-      this.memoObj.title = data;
-    },
-    content: function(data){
-      this.memoObj.content = data;
-    },
+    // title(data) {
+    //   this.memoObj.title = data;
+    // },
+    // content: function(data){
+    //   this.memoObj.content = data;
+    // },
   }
 }
 </script>

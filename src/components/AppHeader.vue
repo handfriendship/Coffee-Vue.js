@@ -18,13 +18,8 @@ export default {
     var vm = this;
     this.$EventBus.$on('arrLength', function(arrLength){
       console.log("AppHeader $EventBus called!");
-      // console.log("arrLength : ", arrLength);
-      // this.setTotal(arrLength);
+
       vm.total = arrLength;
-      // console.log("this : ", this);
-      // console.log("vm : ", vm);
-      // console.log("this.total : ", this.total);
-      // console.log("vm.total : ", vm.total);
     });
   },
   beforeMount() {

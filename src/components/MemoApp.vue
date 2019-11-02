@@ -1,8 +1,9 @@
 <template>
   <div class="memo-app">
-    <memo-form />
+    <memo-form v-on:register="register"/>
     <ul class="memo-list" v-for="(memo, index) in memos">
-      <memo v-bind:propsdata="memo" :propsindex="index" @delMemo="delMemo"/>
+      <memo v-bind:propsdata="memo" :key="memo.id"
+        @delMemo="delMemo" @update="updateMemo"/>
     </ul>
   </div>
 </template>
@@ -22,40 +23,36 @@ export default {
       memos: [],
     }
   },
-  beforeCreate() {
-    console.log("beforeCreate called!");
-  },
-  created() {
-    console.log("MemoApp created called!");
-    this.$EventBus.$on('register', (value) => {
+  methods: {
+    register: function(value){
+      // console.log("value : ", value);
       // console.log("EventBus Called!");
       this.memos.push(value);
       localStorage.setItem(value.title, value);
       this.$EventBus.$emit('arrLength', this.memos.length);
-      console.log("memos: ", this.memos);
-      console.log("localStorage : ", localStorage);
-    });
-
-  },
-  updated() {
-    console.log("MempApp updated called!");
-  },
-  methods: {
+    },
     accept: function(){
       this.memos.push()
     },
-    delMemo: function(index){
-      // console.log("MemoApp delMemo called!");
-      console.log("index : ", index);
-
-      var localKey = this.memos[index].title;
-      this.memos.splice(index, 1);
-      localStorage.removeItem(localKey);
-      this.$EventBus.$emit('arrLength', this.memos.length);
-
-      console.log("memos: ", this.memos);
-      console.log("localStorage : ", localStorage);
-    }
+    delMemo: function(id){
+      console.log("id : ", id);
+      var targetIndex = this.memos.findIndex(v => v.id === id);
+      this.memos.splice(targetIndex, 1);
+      this.storeMemo();
+    },
+    storeMemo: function(){
+      localStorage.clear();
+      for(memo in this.memos){
+        localStorage.setItem(memo.id, memo);
+      }
+    },
+    updateMemo: function(newContent, id){
+      console.log("updateMemo called!");
+      var targetIndex = this.memos.findIndex(element => element.id === id);
+      console.log()
+      this.memos.splice(targetIndex, 1, {...this.memos[targetIndex], content:newContent});
+      this.storeMemo();
+    },
   }
 }
 </script>
