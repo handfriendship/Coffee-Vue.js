@@ -1,12 +1,14 @@
 <template>
   <li class="memo-item">
     <strong>{{ propsdata.title }}</strong>
-    <p v-on:click="updateclick" v-on="keyEvent">
-      <template >{{propsdata.content}}</template>
-      <input type="text"
+    <p v-on:dblclick="handleDblClick">
+      <template v-if="!isclicked">{{propsdata.content}}</template>
+      <input v-else
+              type="text"
               ref="content"
               :value="propsdata.content"
-              v-if="isclicked"
+              v-on:keydown.enter="updateMemo"
+              v-on:blur="blurMemo"
               />
     </p>
     <button>
@@ -18,36 +20,18 @@
 </template>
 
 <script>
-
+import axios from 'axios';
 
 export default {
-
   props: {
     propsdata: {
       type: Object,
     }
   },
   created(){
-    console.log("this.propsdata.content : ", this.propsdata.content);
-    console.log("created called!");
-  },
-  beforeMount(){
-    console.log("this.propsdata.content : ", this.propsdata.content);
-    console.log("beforeMount called!");
-  },
-  mounted(){
-    console.log("this.propsdata.content : ", this.propsdata.content);
-    console.log("mounted called!");
-  },
-  beforeUpdate(){
-    console.log("this.propsdata.content : ", this.propsdata.content);
-    console.log("beforeUpdate called!");
-    // this.setisclicked();
   },
   updated(){
-    console.log("this.propsdata.content : ", this.propsdata.content);
-    console.log("updated called!");
-    console.log("this.isclicked : ", this.isclicked);
+    // console.log("this.isclicked : ", this.isclicked);
     // var vm = this;
     // if(this.isclicked === true){
     //   console.log("if called!");
@@ -70,12 +54,18 @@ export default {
     delMemo: function(){
       this.$emit('delMemo', this.propsdata.id);
     },
-    updateclick: function(){
-      console.log("updateclick called");
+    handleDblClick: function(){
+      // console.log("handleDblClick called!");
       this.isclicked = true;
+      // console.log("this.$refs.content: ", this.$refs.content);
+      this.$nextTick(function(){
+        // console.log("in nextTick");
+        this.$refs.content.focus();
+        // console.log("this.$refs.content: ", this.$refs.content);
+      });
     },
     setisclicked: function(){
-      console.log("setisclicked called!");
+      // console.log("setisclicked called!");
       var vm = this;
       return new Promise(function(resolve, reject) {
         vm.isclicked = false;
@@ -83,23 +73,25 @@ export default {
         reject("Error");
       });
     },
-    enterkey: function(){
-
-      if(window.event.keyCode == 13){
-        console.log("enterkey Enabled!");
-        console.log("$refs : ", this.$refs.content.value);
-        this.$emit('update', this.$refs.content.value, this.propsdata.id);
+    updateMemo: function(e){
+      var content = e.target.value.trim();
+      if(content.length <= 0){
+        return false;
       }
+      this.$emit('update', content, this.propsdata.id);
+      this.isclicked = false;
+    },
+    blurMemo: function(){
+      this.isclicked = false;
     }
   },
   watch: {
     propsdata: function(){
-      console.log("watch detects something related to propsdata");
-      console.log("propsdata : ", this.propsdata);
+      // console.log("watch detects something related to propsdata");
+      // console.log("propsdata : ", this.propsdata);
       this.isclicked = false;
     }
   }
-
 }
 </script>
 

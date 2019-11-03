@@ -23,20 +23,20 @@ export default {
     }
   },
   created() {
-    console.log("MemoForm created");
+    // console.log("MemoForm created");
     // this.memoObj.title = this.title;
     // this.memoObj.content = this.content;
   },
   methods: {
     register: function(e){
       const {title, content} = this;
-      const id = new Date().getTime();
+      // const id = new Date().getTime();
 
       if(title.length === 0 || content.length === 0){
         return false;
       }
 
-      this.$emit('register', {id, title, content});
+      this.$emit('register', {title, content});
       this.title = '';
       this.content = '';
     }

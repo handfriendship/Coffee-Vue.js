@@ -14,20 +14,20 @@ export default {
     }
   },
   created() {
-    console.log("AppHeader created called!");
+    // console.log("AppHeader created called!");
     var vm = this;
     this.$EventBus.$on('arrLength', function(arrLength){
-      console.log("AppHeader $EventBus called!");
+      // console.log("AppHeader $EventBus called!");
 
       vm.total = arrLength;
     });
   },
-  beforeMount() {
-    console.log("AppHeader mounted called!");
-  },
-  updated() {
-    console.log("AppHeader updated called!");
-  },
+  // beforeMount() {
+  //   console.log("AppHeader mounted called!");
+  // },
+  // updated() {
+  //   console.log("AppHeader updated called!");
+  // },
   methods: {
     setTotal(value){
       console.log("setTotal called!");
