@@ -1,11 +1,13 @@
 <template>
   <div class="app-header">
     <h1>Memo Application</h1>
-    <p>{{total}} 개</p>
+    <p>{{getLength}} 개</p>
   </div>
 </template>
 
 <script>
+import {mapState, mapGetters} from 'vuex';
+
 export default {
   name: 'AppHeader',
   data() {
@@ -14,13 +16,7 @@ export default {
     }
   },
   created() {
-    // console.log("AppHeader created called!");
-    var vm = this;
-    this.$EventBus.$on('arrLength', function(arrLength){
-      // console.log("AppHeader $EventBus called!");
 
-      vm.total = arrLength;
-    });
   },
   // beforeMount() {
   //   console.log("AppHeader mounted called!");
@@ -28,14 +24,10 @@ export default {
   // updated() {
   //   console.log("AppHeader updated called!");
   // },
-  methods: {
-    setTotal(value){
-      console.log("setTotal called!");
-      this.total = value;
-    }
-  },
-  watch: {
-
+  computed: {
+    ...mapGetters([
+      'getLength'
+    ])
   }
 }
 </script>

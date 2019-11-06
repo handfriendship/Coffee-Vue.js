@@ -2,7 +2,7 @@
   <li class="memo-item">
     <strong>{{ propsdata.title }}</strong>
     <p v-on:dblclick="handleDblClick">
-      <template v-if="!isclicked">{{propsdata.content}}</template>
+      <template v-if="EditingId!==propsdata.id">{{propsdata.content}}</template>
       <input v-else
               type="text"
               ref="content"
@@ -14,40 +14,25 @@
     <button>
       <i class="fas fa-times" v-on:click="delMemo"></i>
     </button>
-
   </li>
-
 </template>
 
 <script>
 import axios from 'axios';
+import {mapGetters, mapState} from 'vuex';
 
 export default {
   props: {
     propsdata: {
       type: Object,
+    },
+    EditingId: {
+      type: Number,
     }
-  },
-  created(){
-  },
-  updated(){
-    // console.log("this.isclicked : ", this.isclicked);
-    // var vm = this;
-    // if(this.isclicked === true){
-    //   console.log("if called!");
-    //   this.setisclicked().then(function(){
-    //     console.log("this.isclicked : ", vm.isclicked);
-    //   }, function(error){
-    //     console.log(error);
-    //   })
-    // } else {
-    //   console.log("else called!");
-    // }
   },
   data(){
     return {
-      msg: 'Hello World', changedData: '', isclicked: false, keyEvent: {keyup: this.enterkey},
-
+      changedData: ''
     }
   },
   methods: {
@@ -55,42 +40,52 @@ export default {
       this.$emit('delMemo', this.propsdata.id);
     },
     handleDblClick: function(){
-      // console.log("handleDblClick called!");
-      this.isclicked = true;
-      // console.log("this.$refs.content: ", this.$refs.content);
+      // this.$store.commit('isclickedFalse');
+      // this.$nextTick(function(){
+      //   this.$refs.content.focus();
+      // });
+      this.$store.commit('setEditingId', this.propsdata.id);
       this.$nextTick(function(){
-        // console.log("in nextTick");
-        this.$refs.content.focus();
-        // console.log("this.$refs.content: ", this.$refs.content);
-      });
-    },
-    setisclicked: function(){
-      // console.log("setisclicked called!");
-      var vm = this;
-      return new Promise(function(resolve, reject) {
-        vm.isclicked = false;
-        resolve(vm.isclicked);
-        reject("Error");
-      });
+        if(this.EditingId === this.propsdata.id){
+          this.$refs.content.focus();
+        }
+      })
     },
     updateMemo: function(e){
+      console.log("Memo => updateMemo called!");
+      var id = this.propsdata.id;
       var content = e.target.value.trim();
       if(content.length <= 0){
         return false;
       }
-      this.$emit('update', content, this.propsdata.id);
-      this.isclicked = false;
+      this.$emit('update', {id, content});
+      // this.$store.commit('isclickedFalse');
+      // this.$store.commit('setEditingId', id);
     },
     blurMemo: function(){
-      this.isclicked = false;
+      // this.$store.commit('isclickedTrue');
+      if(this.EditingId === this.propsdata.id){
+        this.$store.commit('resetEditingId');
+      }
     }
   },
   watch: {
     propsdata: function(){
       // console.log("watch detects something related to propsdata");
       // console.log("propsdata : ", this.propsdata);
-      this.isclicked = false;
+      // this.$store.commit('isclickedTrue');
+      console.log("watch => propsdata : ", this.propsdata.id);
+      this.$store.commit('resetEditingId');
+    },
+    EditingId: function(){
+      console.log("watch => EditingId : ", this.EditingId);
+
     }
+  },
+  computed: {
+    // ...mapState([
+    //   'EditingId',
+    // ]),
   }
 }
 </script>
